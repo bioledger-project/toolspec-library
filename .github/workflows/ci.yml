@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * *"  # nightly full sweep
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The schema package lives in a separate repo. Check it out into a
+      # subdir so we can install it editable. Assumes it lives under the same
+      # owner as this repo; for a private schema repo, set SCHEMA_REPO_TOKEN
+      # (a PAT with read access) in the repo secrets.
+      - name: Check out toolspec-schema
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/toolspec-schema
+          path: .schema
+          token: ${{ secrets.SCHEMA_REPO_TOKEN || github.token }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install Python
+        run: uv venv
+
+      - name: Install dependencies
+        run: |
+          uv pip install -e ./.schema
+          uv pip install -e .[dev]
+
+      - name: Detect changed command dirs
+        id: changed-dirs
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            git diff --name-only ${{ github.event.before }}...HEAD > changed_files.txt
+          else
+            touch changed_files.txt  # schedule: run everything
+          fi
+
+          # Map changed paths to command dirs (specs/<family>/<command>/...)
+          touched_dirs=""
+          while IFS= read -r file; do
+            if [[ "$file" == specs/*/*/* ]]; then
+              dir=$(echo "$file" | cut -d'/' -f1-3)
+              touched_dirs="$touched_dirs $dir"
+            fi
+          done < changed_files.txt
+
+          # If infra changed, run everything
+          if grep -qE "^(tests/|pyproject\.toml|\.github/workflows/)" changed_files.txt; then
+            echo "run_all=true" >> $GITHUB_OUTPUT
+          else
+            echo "run_all=false" >> $GITHUB_OUTPUT
+            echo "touched_dirs=$(echo $touched_dirs | tr ' ' '\n' | sort -u | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests (changed dirs only)
+        if: steps.changed-dirs.outputs.run_all == 'false'
+        run: |
+          if [ -z "${{ steps.changed-dirs.outputs.touched_dirs }}" ]; then
+            echo "No specs changed, skipping tests"
+          else
+            source .venv/bin/activate
+            pytest ${{ steps.changed-dirs.outputs.touched_dirs }}
+          fi
+
+      - name: Run tests (full sweep)
+        if: steps.changed-dirs.outputs.run_all == 'true' || github.event_name == 'schedule'
+        run: |
+          source .venv/bin/activate
+          pytest
