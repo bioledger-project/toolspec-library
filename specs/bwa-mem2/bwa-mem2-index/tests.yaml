@@ -1,0 +1,7 @@
+cases:
+  - name: render_index
+    inputs:
+      ref_fasta: fixtures/ref.fasta
+    expects:
+      command_contains:
+        - "bwa-mem2 index"

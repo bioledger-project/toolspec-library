@@ -18,10 +18,12 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = []
+# This repo ships YAML assets + tests, not an importable package. Allow
+# hatchling to build a contentless wheel so `pip install -e .[dev]` works.
+bypass-selection = true
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["specs"]
 asyncio_mode = "auto"
 
 [tool.ruff]

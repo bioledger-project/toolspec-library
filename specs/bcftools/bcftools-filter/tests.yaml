@@ -1,0 +1,11 @@
+cases:
+  - name: render_filter
+    inputs:
+      input_vcf: fixtures/calls.vcf.gz
+    parameters:
+      exclude_expression: "QUAL<20"
+    expects:
+      command_contains:
+        - "bcftools filter"
+        - "QUAL<20"
+        - "filtered.vcf.gz"

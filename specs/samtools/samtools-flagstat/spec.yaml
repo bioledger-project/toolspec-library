@@ -1,0 +1,24 @@
+spec_version: "0.1"
+execution:
+  name: samtools-flagstat
+  version: "1.20"
+  description: Report alignment summary statistics (counts of mapped, paired, duplicate reads).
+  container: quay.io/biocontainers/samtools:1.20
+  command: >-
+    samtools flagstat {{inputs.input_bam}} > {{outputs._dir}}/flagstat.txt
+  inputs:
+    input_bam:
+      type: file
+      format: bam
+      required: true
+      description: BAM alignment.
+  outputs:
+    flagstat:
+      type: file
+      format: txt
+      pattern: flagstat.txt
+      description: Plain-text alignment statistics.
+  categories: [qc, alignment]
+  homepage: http://www.htslib.org/
+  citation: "Danecek et al. 2021, GigaScience, doi:10.1093/gigascience/giab008"
+  license: MIT

@@ -1,0 +1,56 @@
+spec_version: "0.1"
+execution:
+  name: gatk-haplotypecaller
+  version: "4.5.0.0"
+  description: Call germline SNPs and indels via local re-assembly, emitting a per-sample GVCF.
+  container: broadinstitute/gatk:4.5.0.0
+  command: >-
+    gatk HaplotypeCaller
+    -R {{inputs.ref_fasta}} -I {{inputs.input_bam}}
+    -O {{outputs._dir}}/output.g.vcf.gz
+    -ploidy {{parameters.ploidy}}
+    --standard-min-confidence-threshold-for-calling {{parameters.stand_call_conf}}
+    -ERC GVCF
+  inputs:
+    input_bam:
+      type: file
+      format: bam
+      required: true
+      description: Coordinate-sorted, indexed, duplicate-marked BAM.
+    ref_fasta:
+      type: file
+      format: fasta
+      required: true
+      description: Reference FASTA (must have sibling .fai and .dict).
+    ref_fai:
+      type: file
+      format: fai
+      required: true
+      description: FASTA index (samtools-faidx); GATK locates it beside the reference.
+    ref_dict:
+      type: file
+      format: dict
+      required: true
+      description: Sequence dictionary (samtools-dict); GATK locates it beside the reference.
+  outputs:
+    gvcf:
+      type: file
+      format: vcf
+      pattern: "output.g.vcf.gz"
+      description: Per-sample GVCF for joint genotyping with gatk-genotypegvcfs.
+  parameters:
+    ploidy:
+      type: integer
+      default: 2
+      min: 1
+      max: 8
+      description: Sample ploidy (use 1 for haploid organisms like P. falciparum blood stage).
+    stand_call_conf:
+      type: float
+      default: 30.0
+      min: 0.0
+      description: Minimum phred-scaled confidence to emit a call.
+  categories: [variant-calling]
+  homepage: https://gatk.broadinstitute.org/
+  citation: "Poplin et al. 2018, bioRxiv, doi:10.1101/201178"
+  license: BSD-3-Clause

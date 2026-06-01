@@ -1,0 +1,7 @@
+cases:
+  - name: render_faidx
+    inputs:
+      ref_fasta: fixtures/ref.fasta
+    expects:
+      command_contains:
+        - "samtools faidx"

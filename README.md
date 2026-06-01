@@ -7,8 +7,9 @@ specs from scratch.
 
 ## Status
 
-**Pre-alpha.** The directory layout and testing framework described below
-are the agreed plan; the repo is otherwise empty. Specs will be added as
+**Alpha.** Phase 1 ships five tool families (`bwa-mem2`, `samtools`,
+`gatk`, `bcftools`, `rtg-tools`) covering reference prep, alignment,
+variant calling, VCF ops, and benchmarking. More families are added as
 they're written and validated.
 
 ## Relationship to other repos
@@ -29,10 +30,9 @@ bioledger                   ← consumes specs at runtime
 - `bioledger` itself depends on `bioledger-toolspec-schema` and can pull
   specs from this repo at install/sync time.
 
-While `bioledger-toolspec-schema` is still pre-extraction, CI here will
-import `bioledger.toolspec` directly from an editable
-`../bioledger` checkout. That's the only difference between "now" and
-"after migration".
+CI installs `bioledger-toolspec-schema` from its own repo
+(`bioledger-project/toolspec-schema`, checked out into `.schema`) and
+imports `bioledger_toolspec_schema` to validate every committed spec.
 
 ## Directory layout
 
@@ -59,9 +59,7 @@ bioledger-toolspec-library/
 │       └── fastqc/
 │           ├── spec.yaml
 │           └── tests.yaml
-├── tests/
-│   ├── conftest.py
-│   └── test_specs.py                    # auto-discovers every spec.yaml
+├── conftest.py                          # path-addressable collector (repo root)
 └── .github/workflows/ci.yml
 ```
 
@@ -203,9 +201,8 @@ command). Pytest's normal path-based selection then "just works".
 1. `git diff --name-only origin/<base>...HEAD` to find changed paths.
 2. Map paths to a set of touched command dirs. Rules:
    - `specs/<family>/<command>/**` → that command.
-   - `specs/<family>/family.yaml` → all commands in that family.
-   - changes to `tests/`, `pyproject.toml`, the workflow itself, or
-     anything in the schema package → run **everything**.
+   - changes to `conftest.py`, `pyproject.toml`, or the workflow itself →
+     run **everything**.
 3. `pytest` with that subset of dirs as positional args. Both Layer A
    and Layer B run; container cases either execute or skip per the rules
    above.
@@ -229,17 +226,7 @@ pytest specs/hyphy/absrel/                        # just one command
 
 ## Open questions / TODOs
 
-- [ ] Decide `family.yaml` schema (homepage, citation, license, default
-      container base, contact) — punt until the second family lands.
-- [ ] Pick a fixture-data strategy (git-lfs vs download manifest) on
-      first command that needs >a few KB of input.
-- [ ] Once `bioledger-toolspec-schema` is extracted, switch CI from
-      `bioledger.toolspec` import to `bioledger_toolspec_schema`.
-- [ ] Scaffold `pyproject.toml`, `conftest.py` (path-addressable
-      collector), and the GitHub Actions workflow with the
-      changed-paths discovery step.
-- [ ] Decide the exact `tests.yaml` schema (case fields, output assertion
-      vocabulary, sha256/min_size/etc.) on the first command that ships
-      `run: true`.
-- [ ] Add the first real family (likely `hyphy/`) end-to-end as the
-      reference implementation.
+- [ ] Add container execution to behavioral tests (`run: true`) once
+      the first Docker-backed command is ready.
+- [ ] Ship a second family to stress-test the `family.yaml` schema.
+- [ ] Automate manifest URL health checks on the nightly CI schedule.

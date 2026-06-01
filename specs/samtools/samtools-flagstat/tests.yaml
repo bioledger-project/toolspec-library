@@ -1,0 +1,8 @@
+cases:
+  - name: render_flagstat
+    inputs:
+      input_bam: fixtures/sorted.bam
+    expects:
+      command_contains:
+        - "samtools flagstat"
+        - "flagstat.txt"

@@ -1,0 +1,55 @@
+spec_version: "0.1"
+execution:
+  name: rtg-vcfeval
+  version: "3.12.1"
+  description: Compare called variants against a baseline (truth) VCF and report TP/FP/FN concordance.
+  container: quay.io/biocontainers/rtg-tools:3.12.1
+  command: >-
+    rtg vcfeval -b {{inputs.baseline}} -c {{inputs.calls}}
+    -t {{inputs.template}} -o {{outputs._dir}}/vcfeval {{parameters.extra_flags}}
+  inputs:
+    baseline:
+      type: file
+      format: vcf
+      required: true
+      description: Truth/baseline VCF (e.g. published gold-standard calls).
+    calls:
+      type: file
+      format: vcf
+      required: true
+      description: VCF of calls to evaluate.
+    template:
+      type: directory
+      format: any
+      required: true
+      description: RTG SDF template produced by rtg-format.
+  outputs:
+    summary:
+      type: file
+      format: txt
+      pattern: "vcfeval/summary.txt"
+      description: Precision/recall/F-measure summary.
+    tp:
+      type: file
+      format: vcf
+      pattern: "vcfeval/tp.vcf.gz"
+      description: True-positive calls.
+    fp:
+      type: file
+      format: vcf
+      pattern: "vcfeval/fp.vcf.gz"
+      description: False-positive calls.
+    fn:
+      type: file
+      format: vcf
+      pattern: "vcfeval/fn.vcf.gz"
+      description: False-negative (missed) baseline calls.
+  parameters:
+    extra_flags:
+      type: string
+      default: ""
+      description: Extra rtg vcfeval flags (e.g. '--squash-ploidy' for haploid comparisons).
+  categories: [benchmarking, vcf-ops]
+  homepage: https://github.com/RealTimeGenomics/rtg-tools
+  citation: "Cleary et al. 2015, bioRxiv, doi:10.1101/023754"
+  license: BSD-2-Clause

@@ -1,0 +1,24 @@
+spec_version: "0.1"
+execution:
+  name: bwa-mem2-index
+  version: "2.2.1"
+  description: Build a bwa-mem2 FM-index for a reference genome (run once per reference).
+  container: quay.io/biocontainers/bwa-mem2:2.2.1
+  command: >-
+    bwa-mem2 index {{inputs.ref_fasta}}
+  inputs:
+    ref_fasta:
+      type: file
+      format: fasta
+      required: true
+      description: Reference genome FASTA to index (in-place; index files are written beside it).
+  outputs:
+    index:
+      type: file
+      format: any
+      pattern: "*.bwt.2bit.64"
+      description: bwa-mem2 index files (.0123, .amb, .ann, .bwt.2bit.64, .pac) beside the FASTA.
+  categories: [reference-prep, alignment]
+  homepage: https://github.com/bwa-mem2/bwa-mem2
+  citation: "Vasimuddin et al. 2019, IEEE IPDPS, doi:10.1109/IPDPS.2019.00041"
+  license: MIT

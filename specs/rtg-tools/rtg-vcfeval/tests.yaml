@@ -1,0 +1,13 @@
+cases:
+  - name: render_vcfeval
+    inputs:
+      baseline: fixtures/truth.vcf.gz
+      calls: fixtures/calls.vcf.gz
+      template: fixtures/ref.sdf
+    parameters:
+      extra_flags: "--squash-ploidy"
+    expects:
+      command_contains:
+        - "rtg vcfeval"
+        - "--squash-ploidy"
+        - "vcfeval"

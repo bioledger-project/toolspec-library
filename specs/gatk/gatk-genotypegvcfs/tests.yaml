@@ -1,0 +1,14 @@
+cases:
+  - name: render_genotype
+    inputs:
+      input_gvcf: fixtures/sample.g.vcf.gz
+      ref_fasta: fixtures/ref.fasta
+      ref_fai: fixtures/ref.fasta.fai
+      ref_dict: fixtures/ref.dict
+    parameters:
+      ploidy: 1
+    expects:
+      command_contains:
+        - "gatk GenotypeGVCFs"
+        - "-ploidy 1"
+        - "genotyped.vcf.gz"

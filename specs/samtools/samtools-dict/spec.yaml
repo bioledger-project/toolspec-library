@@ -1,0 +1,24 @@
+spec_version: "0.1"
+execution:
+  name: samtools-dict
+  version: "1.20"
+  description: Create a sequence dictionary (.dict) for a reference genome (required by GATK).
+  container: quay.io/biocontainers/samtools:1.20
+  command: >-
+    samtools dict -o {{outputs._dir}}/ref.dict {{inputs.ref_fasta}}
+  inputs:
+    ref_fasta:
+      type: file
+      format: fasta
+      required: true
+      description: Reference genome FASTA.
+  outputs:
+    dict:
+      type: file
+      format: any
+      pattern: ref.dict
+      description: Sequence dictionary consumed by GATK tools.
+  categories: [reference-prep]
+  homepage: http://www.htslib.org/
+  citation: "Danecek et al. 2021, GigaScience, doi:10.1093/gigascience/giab008"
+  license: MIT

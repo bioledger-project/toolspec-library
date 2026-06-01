@@ -1,0 +1,24 @@
+spec_version: "0.1"
+execution:
+  name: samtools-faidx
+  version: "1.20"
+  description: Build a FASTA index (.fai) for a reference genome.
+  container: quay.io/biocontainers/samtools:1.20
+  command: >-
+    samtools faidx {{inputs.ref_fasta}}
+  inputs:
+    ref_fasta:
+      type: file
+      format: fasta
+      required: true
+      description: Reference genome FASTA (the .fai is written beside it).
+  outputs:
+    fai:
+      type: file
+      format: any
+      pattern: "*.fai"
+      description: FASTA index required by GATK and many callers.
+  categories: [reference-prep]
+  homepage: http://www.htslib.org/
+  citation: "Danecek et al. 2021, GigaScience, doi:10.1093/gigascience/giab008"
+  license: MIT

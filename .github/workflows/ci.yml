@@ -56,7 +56,7 @@ jobs:
           done < changed_files.txt
 
           # If infra changed, run everything
-          if grep -qE "^(tests/|pyproject\.toml|\.github/workflows/)" changed_files.txt; then
+          if grep -qE "^(conftest\.py|pyproject\.toml|\.github/workflows/)" changed_files.txt; then
             echo "run_all=true" >> $GITHUB_OUTPUT
           else
             echo "run_all=false" >> $GITHUB_OUTPUT

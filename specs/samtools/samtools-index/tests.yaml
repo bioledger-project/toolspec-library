@@ -1,0 +1,7 @@
+cases:
+  - name: render_index
+    inputs:
+      input_bam: fixtures/sorted.bam
+    expects:
+      command_contains:
+        - "samtools index"

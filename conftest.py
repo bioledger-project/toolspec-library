@@ -1,9 +1,10 @@
 """Path-addressable pytest collector for tool specs.
 
-Walks specs/ and emits pytest items per command directory. Allows:
-- pytest                    # all commands
-- pytest specs/hyphy/       # whole family
-- pytest specs/hyphy/absrel/ # one command
+Lives at the repo root so its ``pytest_collect_file`` hook fires while pytest
+walks ``specs/``. Emits pytest items per command directory. Allows:
+- pytest                     # all commands
+- pytest specs/samtools/     # whole family
+- pytest specs/samtools/sort/ # one command
 """
 
 from __future__ import annotations
@@ -12,29 +13,28 @@ from pathlib import Path
 
 import pytest
 
-# Find the project root (repo root)
-ROOT = Path(__file__).parent.parent
+# Repo root (this file lives at the repo root).
+ROOT = Path(__file__).parent
 SPECS_DIR = ROOT / "specs"
 
 
-def pytest_collect_file(parent, path):
-    """Collect spec.yaml and tests.yaml files under specs/."""
-    # Only process files under specs/
-    rel_path = Path(path).relative_to(ROOT)
-    if not rel_path.parts[:1] == ("specs",):
+def pytest_collect_file(parent, file_path: Path):
+    """Collect spec.yaml and tests.yaml files under specs/ (pytest >= 8 API)."""
+    try:
+        rel_path = file_path.relative_to(ROOT)
+    except ValueError:
         return
-
-    # Only collect spec.yaml and tests.yaml
-    if Path(path).name in ("spec.yaml", "tests.yaml"):
-        return SpecFile.from_parent(parent, fspath=path)
+    if rel_path.parts[:1] != ("specs",):
+        return
+    if file_path.name in ("spec.yaml", "tests.yaml"):
+        return SpecFile.from_parent(parent, path=file_path)
 
 
 class SpecFile(pytest.File):
     """A spec.yaml or tests.yaml file."""
 
     def collect(self):
-        """Emit test items."""
-        spec_path = self.fspath
+        spec_path = self.path
         tests_path = spec_path.parent / "tests.yaml"
         is_spec = spec_path.name == "spec.yaml"
 
@@ -54,8 +54,8 @@ class SpecFile(pytest.File):
                 return
 
             try:
-                cases = yaml.safe_load(tests_path.read_text()) or {}
-                cases = cases.get("cases", [])
+                data = yaml.safe_load(tests_path.read_text()) or {}
+                cases = data.get("cases", [])
             except Exception:
                 return  # skip if tests.yaml is malformed
 
@@ -104,10 +104,12 @@ class SpecValidationItem(pytest.Item):
         strict_result = validate_spec(spec, strict=True)
         warns = [i for i in strict_result.issues if i.severity == Severity.WARNING]
         if warns:
-            # Print warnings but don't fail
             print("\n  Warnings (strict mode):")
             for w in warns:
                 print("    {}: {}".format(w.field, w.message))
+
+    def reportinfo(self):
+        return self.path, 0, f"spec: {self.name}"
 
 
 class BehavioralTestCase(pytest.Item):
@@ -127,12 +129,13 @@ class BehavioralTestCase(pytest.Item):
 
         spec = load_spec(self.spec_path)
 
-        # Render check (always runs)
         inputs = self.case.get("inputs", {})
         parameters = self.case.get("parameters", {})
         expects = self.case.get("expects", {})
 
-        # Build template context
+        # Render check (always runs). NOTE: inputs render to dummy paths, so
+        # command_contains should assert literals + parameter values, not input
+        # file paths (Phase 1 limitation).
         context = {
             "inputs": {k: f"/input/{k}/dummy" for k in inputs},
             "parameters": parameters,
@@ -142,25 +145,23 @@ class BehavioralTestCase(pytest.Item):
         template = Template(spec.execution.command)
         rendered = template.render(context)
 
-        # Assert on command_contains
         for substr in expects.get("command_contains", []):
             if substr not in rendered:
                 raise AssertionError(f"Expected '{substr}' in rendered command: {rendered}")
 
-        # Container run (opt-in via run: true)
+        # Container run (opt-in via run: true) — deferred to Phase 2.
         if self.case.get("run", False):
-            # Check if Docker is available
             import shutil
 
             if not shutil.which("docker") and not shutil.which("podman"):
                 pytest.skip("Docker/Podman not available")
 
-            # Check if fixtures exist
             for key, rel_path in inputs.items():
                 fixture_path = self.spec_path.parent / rel_path
                 if not fixture_path.exists():
                     pytest.skip(f"Fixture not found: {rel_path}")
 
-            # TODO: actually run container and check outputs
-            # For now, skip with a clear message
             pytest.skip("Container execution not yet implemented")
+
+    def reportinfo(self):
+        return self.path, 0, f"case: {self.name}"

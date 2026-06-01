@@ -1,0 +1,12 @@
+cases:
+  - name: render_norm
+    inputs:
+      input_vcf: fixtures/calls.vcf.gz
+      ref_fasta: fixtures/ref.fasta
+    parameters:
+      multiallelics: "-any"
+    expects:
+      command_contains:
+        - "bcftools norm"
+        - "-m -any"
+        - "normalized.vcf.gz"

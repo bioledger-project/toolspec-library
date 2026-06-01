@@ -1,0 +1,8 @@
+cases:
+  - name: render_dict
+    inputs:
+      ref_fasta: fixtures/ref.fasta
+    expects:
+      command_contains:
+        - "samtools dict"
+        - "ref.dict"

@@ -1,0 +1,24 @@
+spec_version: "0.1"
+execution:
+  name: rtg-format
+  version: "3.12.1"
+  description: Convert a reference FASTA into an RTG SDF, required as the template for rtg-vcfeval.
+  container: quay.io/biocontainers/rtg-tools:3.12.1
+  command: >-
+    rtg format -o {{outputs._dir}}/ref.sdf {{inputs.ref_fasta}}
+  inputs:
+    ref_fasta:
+      type: file
+      format: fasta
+      required: true
+      description: Reference genome FASTA.
+  outputs:
+    sdf:
+      type: directory
+      format: any
+      pattern: "ref.sdf"
+      description: RTG Sequence Data File directory used as the vcfeval template.
+  categories: [reference-prep, benchmarking]
+  homepage: https://github.com/RealTimeGenomics/rtg-tools
+  citation: "Cleary et al. 2015, bioRxiv, doi:10.1101/023754"
+  license: BSD-2-Clause

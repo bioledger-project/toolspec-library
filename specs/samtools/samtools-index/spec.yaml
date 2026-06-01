@@ -1,0 +1,24 @@
+spec_version: "0.1"
+execution:
+  name: samtools-index
+  version: "1.20"
+  description: Index a coordinate-sorted BAM, producing a .bai index.
+  container: quay.io/biocontainers/samtools:1.20
+  command: >-
+    samtools index {{inputs.input_bam}}
+  inputs:
+    input_bam:
+      type: file
+      format: bam
+      required: true
+      description: Coordinate-sorted BAM.
+  outputs:
+    bam_index:
+      type: file
+      format: any
+      pattern: "*.bai"
+      description: BAM index written beside the input BAM.
+  categories: [alignment]
+  homepage: http://www.htslib.org/
+  citation: "Danecek et al. 2021, GigaScience, doi:10.1093/gigascience/giab008"
+  license: MIT

@@ -1,0 +1,47 @@
+spec_version: "0.1"
+execution:
+  name: bwa-mem2-mem
+  version: "2.2.1"
+  description: Align paired-end (or single-end) reads to an indexed reference with bwa-mem2 mem.
+  container: quay.io/biocontainers/bwa-mem2:2.2.1
+  command: >-
+    bwa-mem2 mem -t {{parameters.threads}} -R "{{parameters.read_group}}"
+    {{inputs.ref_fasta}} {{inputs.reads1}} {{inputs.reads2}}
+    > {{outputs._dir}}/aligned.sam
+  inputs:
+    ref_fasta:
+      type: file
+      format: fasta
+      required: true
+      description: Reference FASTA that has been indexed by bwa-mem2-index (index files beside it).
+    reads1:
+      type: file
+      format: fastq
+      required: true
+      description: Read 1 FASTQ (R1).
+    reads2:
+      type: file
+      format: fastq
+      required: false
+      description: Read 2 FASTQ (R2) for paired-end; omit for single-end.
+  outputs:
+    alignment:
+      type: file
+      format: sam
+      pattern: aligned.sam
+      description: Unsorted SAM alignment.
+  parameters:
+    threads:
+      type: integer
+      default: 4
+      min: 1
+      max: 64
+      description: Worker threads.
+    read_group:
+      type: string
+      default: "@RG\\tID:sample\\tSM:sample\\tPL:ILLUMINA"
+      description: SAM read-group header line.
+  categories: [alignment]
+  homepage: https://github.com/bwa-mem2/bwa-mem2
+  citation: "Vasimuddin et al. 2019, IEEE IPDPS, doi:10.1109/IPDPS.2019.00041"
+  license: MIT

@@ -1,0 +1,16 @@
+cases:
+  - name: render_haploid
+    inputs:
+      input_bam: fixtures/sample.bam
+      ref_fasta: fixtures/ref.fasta
+      ref_fai: fixtures/ref.fasta.fai
+      ref_dict: fixtures/ref.dict
+    parameters:
+      ploidy: 1
+      stand_call_conf: 30.0
+    expects:
+      command_contains:
+        - "gatk HaplotypeCaller"
+        - "-ploidy 1"
+        - "-ERC GVCF"
+        - "output.g.vcf.gz"

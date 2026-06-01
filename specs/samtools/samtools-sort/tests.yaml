@@ -1,0 +1,11 @@
+cases:
+  - name: render_sort
+    inputs:
+      input_sam: fixtures/aligned.sam
+    parameters:
+      threads: 2
+    expects:
+      command_contains:
+        - "samtools sort"
+        - "-@ 2"
+        - "sorted.bam"

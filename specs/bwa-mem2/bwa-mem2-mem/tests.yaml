@@ -1,0 +1,13 @@
+cases:
+  - name: render_paired_end
+    inputs:
+      ref_fasta: fixtures/ref.fasta
+      reads1: fixtures/r1.fastq.gz
+      reads2: fixtures/r2.fastq.gz
+    parameters:
+      threads: 8
+    expects:
+      command_contains:
+        - "bwa-mem2 mem"
+        - "-t 8"
+        - "aligned.sam"

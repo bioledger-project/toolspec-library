@@ -1,0 +1,49 @@
+spec_version: "0.1"
+execution:
+  name: gatk-genotypegvcfs
+  version: "4.5.0.0"
+  description: Perform joint genotyping on one or more GVCFs to produce a final VCF.
+  container: broadinstitute/gatk:4.5.0.0
+  command: >-
+    gatk GenotypeGVCFs
+    -R {{inputs.ref_fasta}} -V {{inputs.input_gvcf}}
+    -O {{outputs._dir}}/genotyped.vcf.gz
+    -ploidy {{parameters.ploidy}}
+  inputs:
+    input_gvcf:
+      type: file
+      format: vcf
+      required: true
+      description: GVCF from gatk-haplotypecaller (or a GenomicsDB/combined GVCF).
+    ref_fasta:
+      type: file
+      format: fasta
+      required: true
+      description: Reference FASTA (must have sibling .fai and .dict).
+    ref_fai:
+      type: file
+      format: fai
+      required: true
+      description: FASTA index; GATK locates it beside the reference.
+    ref_dict:
+      type: file
+      format: dict
+      required: true
+      description: Sequence dictionary; GATK locates it beside the reference.
+  outputs:
+    vcf:
+      type: file
+      format: vcf
+      pattern: "genotyped.vcf.gz"
+      description: Final genotyped VCF.
+  parameters:
+    ploidy:
+      type: integer
+      default: 2
+      min: 1
+      max: 8
+      description: Sample ploidy (match the value used in gatk-haplotypecaller).
+  categories: [variant-calling]
+  homepage: https://gatk.broadinstitute.org/
+  citation: "Poplin et al. 2018, bioRxiv, doi:10.1101/201178"
+  license: BSD-3-Clause
