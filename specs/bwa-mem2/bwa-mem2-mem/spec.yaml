@@ -14,6 +14,31 @@ execution:
       format: fasta
       required: true
       description: Reference FASTA that has been indexed by bwa-mem2-index (index files beside it).
+    ref_0123:
+      type: file
+      format: any
+      required: true
+      description: bwa-mem2 .0123 index file (must be staged beside the reference).
+    ref_amb:
+      type: file
+      format: any
+      required: true
+      description: bwa-mem2 .amb index file (must be staged beside the reference).
+    ref_ann:
+      type: file
+      format: any
+      required: true
+      description: bwa-mem2 .ann index file (must be staged beside the reference).
+    ref_bwt:
+      type: file
+      format: any
+      required: true
+      description: bwa-mem2 .bwt.2bit.64 index file (must be staged beside the reference).
+    ref_pac:
+      type: file
+      format: any
+      required: true
+      description: bwa-mem2 .pac index file (must be staged beside the reference).
     reads1:
       type: file
       format: fastq

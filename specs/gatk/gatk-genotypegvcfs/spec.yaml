@@ -15,6 +15,11 @@ execution:
       format: vcf
       required: true
       description: GVCF from gatk-haplotypecaller (or a GenomicsDB/combined GVCF).
+    gvcf_index:
+      type: file
+      format: tbi
+      required: false
+      description: Tabix index for the GVCF (.tbi); GATK will use if present.
     ref_fasta:
       type: file
       format: fasta

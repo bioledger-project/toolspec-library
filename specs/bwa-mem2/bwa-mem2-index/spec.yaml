@@ -13,11 +13,31 @@ execution:
       required: true
       description: Reference genome FASTA to index (in-place; index files are written beside it).
   outputs:
-    index:
+    index_0123:
+      type: file
+      format: any
+      pattern: "*.0123"
+      description: bwa-mem2 index file part 1.
+    index_amb:
+      type: file
+      format: any
+      pattern: "*.amb"
+      description: bwa-mem2 index file part 2 (ambiguity map).
+    index_ann:
+      type: file
+      format: any
+      pattern: "*.ann"
+      description: bwa-mem2 index file part 3 (annotation).
+    index_bwt:
       type: file
       format: any
       pattern: "*.bwt.2bit.64"
-      description: bwa-mem2 index files (.0123, .amb, .ann, .bwt.2bit.64, .pac) beside the FASTA.
+      description: bwa-mem2 BWT index (main index).
+    index_pac:
+      type: file
+      format: any
+      pattern: "*.pac"
+      description: bwa-mem2 index file part 5 (packed sequence).
   categories: [reference-prep, alignment]
   homepage: https://github.com/bwa-mem2/bwa-mem2
   citation: "Vasimuddin et al. 2019, IEEE IPDPS, doi:10.1109/IPDPS.2019.00041"

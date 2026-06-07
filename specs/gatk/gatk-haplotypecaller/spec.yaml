@@ -17,6 +17,11 @@ execution:
       format: bam
       required: true
       description: Coordinate-sorted, indexed, duplicate-marked BAM.
+    bam_index:
+      type: file
+      format: bai
+      required: true
+      description: BAM index (.bai); must be staged beside the BAM for GATK.
     ref_fasta:
       type: file
       format: fasta
