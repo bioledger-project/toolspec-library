@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # The schema package lives in a separate repo. Check it out into a
       # subdir so we can install it editable. Assumes it lives under the same
