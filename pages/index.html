@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioLedger Tool Spec Library</title>
+  <style>
+    :root { --bg: #f8f9fa; --card: #fff; --border: #dee2e6; --accent: #0d6efd; --text: #212529; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 2rem; max-width: 900px; margin: 0 auto; }
+    h1 { margin-bottom: 0.5rem; }
+    .subtitle { color: #6c757d; margin-bottom: 1.5rem; }
+    .search-box { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1.5rem; }
+    .search-box:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(13,110,253,.15); }
+    .stats { color: #6c757d; font-size: 0.875rem; margin-bottom: 1rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+    .card-header { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.25rem; }
+    .card-name { font-weight: 600; font-size: 1.1rem; color: var(--accent); }
+    .card-version { font-size: 0.8rem; color: #6c757d; }
+    .card-desc { color: #495057; margin-bottom: 0.5rem; }
+    .card-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.8rem; }
+    .tag { background: #e9ecef; padding: 0.15rem 0.5rem; border-radius: 4px; }
+    .tag-family { background: #cfe2ff; color: #084298; }
+    .tag-cat { background: #d1e7dd; color: #0f5132; }
+    .io { color: #6c757d; }
+    .empty { text-align: center; padding: 3rem; color: #6c757d; }
+  </style>
+</head>
+<body>
+  <h1>BioLedger Tool Spec Library</h1>
+  <p class="subtitle">Search available bioinformatics tool specifications</p>
+  <input type="text" class="search-box" id="search" placeholder="Search tools (e.g. samtools, alignment, vcf)..." autofocus>
+  <div class="stats" id="stats"></div>
+  <div id="results"></div>
+
+  <script>
+    let tools = [];
+
+    async function init() {
+      const res = await fetch('index.json');
+      tools = await res.json();
+      render(tools);
+    }
+
+    function render(items) {
+      const stats = document.getElementById('stats');
+      const results = document.getElementById('results');
+      stats.textContent = `${items.length} tool${items.length !== 1 ? 's' : ''} found`;
+
+      if (items.length === 0) {
+        results.innerHTML = '<div class="empty">No tools match your search.</div>';
+        return;
+      }
+
+      results.innerHTML = items.map(t => `
+        <div class="card">
+          <div class="card-header">
+            <span class="card-name">${esc(t.name)}</span>
+            <span class="card-version">v${esc(t.version)}</span>
+          </div>
+          <div class="card-desc">${esc(t.description)}</div>
+          <div class="card-meta">
+            <span class="tag tag-family">${esc(t.family)}</span>
+            ${t.categories.map(c => `<span class="tag tag-cat">${esc(c)}</span>`).join('')}
+            <span class="io">in: ${t.inputs.join(', ')} &rarr; out: ${t.outputs.join(', ')}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+    document.getElementById('search').addEventListener('input', e => {
+      const q = e.target.value.toLowerCase().trim();
+      if (!q) { render(tools); return; }
+      const filtered = tools.filter(t =>
+        t.name.toLowerCase().includes(q) ||
+        t.family.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q) ||
+        t.categories.some(c => c.toLowerCase().includes(q)) ||
+        t.inputs.some(i => i.toLowerCase().includes(q)) ||
+        t.outputs.some(o => o.toLowerCase().includes(q))
+      );
+      render(filtered);
+    });
+
+    init();
+  </script>
+</body>
+</html>

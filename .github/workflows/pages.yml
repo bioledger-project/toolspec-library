@@ -1,0 +1,65 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out toolspec-schema
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/toolspec-schema
+          path: .schema
+          token: ${{ secrets.SCHEMA_REPO_TOKEN || github.token }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install Python
+        run: uv venv
+
+      - name: Install schema
+        run: uv pip install -e ./.schema
+
+      - name: Generate index
+        run: |
+          source .venv/bin/activate
+          python -c "
+          from bioledger_toolspec_schema.index import write_index
+          from pathlib import Path
+          write_index(Path('specs'), Path('_site/index.json'))
+          "
+
+      - name: Copy search page
+        run: cp pages/index.html _site/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
