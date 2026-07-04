@@ -132,11 +132,13 @@ class BehavioralTestCase(pytest.Item):
         parameters = self.case.get("parameters", {})
         expects = self.case.get("expects", {})
 
-        # Render check (always runs). NOTE: inputs render to dummy paths, so
-        # command_contains should assert literals + parameter values, not input
-        # file paths (Phase 1 limitation).
+        # Render check (always runs). Build dummy paths using the fixture filename
+        # from tests.yaml so custom filters (stem, basename, etc.) produce
+        # meaningful output rather than always returning "dummy".
         context = {
-            "inputs": {k: f"/input/{k}/dummy" for k in inputs},
+            "inputs": {
+                k: f"/input/{k}/{Path(v).name}" for k, v in inputs.items()
+            },
             "parameters": parameters,
             "outputs": {"_dir": "/output"},
         }
