@@ -1,5 +1,5 @@
 spec_version: "0.1"
-revision: "1"
+revision: "2"
 execution:
   name: bgzip
   version: "1.20"
@@ -10,7 +10,7 @@ execution:
   container: quay.io/biocontainers/htslib:1.20--h5efdd21_1
   command: >-
     gunzip -k -f {{inputs.input_gz}} &&
-    bgzip -f {{inputs.input_gz|stem}}
+    bgzip -i -f {{inputs.input_gz|stem}}
   inputs:
     input_gz:
       type: file
@@ -22,6 +22,10 @@ execution:
       type: file
       pattern: "*.gz"
       description: bgzf-recompressed output file (same name as input).
+    gzi_index:
+      type: file
+      pattern: "*.gzi"
+      description: bgzip index produced alongside the recompressed .gz file.
   categories: [preprocessing, compression]
   homepage: https://www.htslib.org/
   citation: "Danecek et al. 2021, GigaScience, doi:10.1093/gigascience/giab008"

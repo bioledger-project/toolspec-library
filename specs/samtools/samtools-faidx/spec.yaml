@@ -1,9 +1,9 @@
 spec_version: "0.1"
-revision: "1"
+revision: "2"
 execution:
   name: samtools-faidx
   version: "1.20"
-  description: Build a FASTA index (.fai) for a reference genome.
+  description: Build a FASTA index (.fai) and bgzip index (.gzi) for a reference genome.
   container: quay.io/biocontainers/samtools:1.20--h50ea8bc_1
   command: >-
     samtools faidx {{inputs.ref_fasta}}
@@ -12,13 +12,18 @@ execution:
       type: file
       format: fasta
       required: true
-      description: Reference genome FASTA (the .fai is written beside it).
+      description: Reference genome FASTA (the .fai and .gzi are written beside it).
   outputs:
     fai:
       type: file
       format: any
       pattern: "*.fai"
       description: FASTA index required by GATK and many callers.
+    gzi_index:
+      type: file
+      format: any
+      pattern: "*.gzi"
+      description: bgzip index produced for bgzipped FASTA inputs.
   categories: [reference-prep]
   homepage: http://www.htslib.org/
   citation: "Danecek et al. 2021, GigaScience, doi:10.1093/gigascience/giab008"

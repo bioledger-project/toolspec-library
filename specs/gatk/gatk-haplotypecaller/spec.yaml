@@ -1,5 +1,5 @@
 spec_version: "0.1"
-revision: "1"
+revision: "2"
 execution:
   name: gatk-haplotypecaller
   version: "4.5.0.0"
@@ -27,7 +27,7 @@ execution:
       type: file
       format: fasta
       required: true
-      description: Reference FASTA (must have sibling .fai and .dict).
+      description: Reference FASTA (must have sibling .fai, .dict, and .gzi if bgzipped).
     ref_fai:
       type: file
       format: fai
@@ -38,6 +38,11 @@ execution:
       format: dict
       required: true
       description: Sequence dictionary (samtools-dict); GATK locates it beside the reference.
+    ref_gzi:
+      type: file
+      format: gzi
+      required: false
+      description: bgzip index for the reference FASTA; required by GATK when the reference is bgzipped.
   outputs:
     gvcf:
       type: file
