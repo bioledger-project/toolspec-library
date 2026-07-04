@@ -1,4 +1,5 @@
 spec_version: "0.1"
+revision: "1"
 execution:
   name: samtools-index
   version: "1.20"

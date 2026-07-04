@@ -6,3 +6,10 @@ cases:
       command_contains:
         - "samtools dict"
         - "ref.dict"
+  - name: render_dict_double_suffix
+    inputs:
+      ref_fasta: fixtures/ref.fna.gz
+    expects:
+      command_contains:
+        - "samtools dict"
+        - "ref.dict"

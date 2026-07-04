@@ -1,11 +1,12 @@
 spec_version: "0.1"
+revision: "1"
 execution:
   name: samtools-dict
   version: "1.20"
   description: Create a sequence dictionary (.dict) for a reference genome (required by GATK).
   container: quay.io/biocontainers/samtools:1.20--h50ea8bc_1
   command: >-
-    samtools dict -o {{outputs._dir}}/{{inputs.ref_fasta|stem}}.dict {{inputs.ref_fasta}}
+    samtools dict -o {{outputs._dir}}/{{inputs.ref_fasta|stem(true)}}.dict {{inputs.ref_fasta}}
   inputs:
     ref_fasta:
       type: file
