@@ -1,0 +1,26 @@
+spec_version: "0.1"
+execution:
+  name: bgzip
+  version: "1.20"
+  description: >-
+    Recompress a gzip-compressed file as bgzf (block gzip), producing a file
+    that samtools faidx and other HTSlib tools can index. Input must be a
+    .gz file; output is written alongside the input with the same name.
+  container: quay.io/biocontainers/htslib:1.20--h5efdd21_1
+  command: >-
+    gunzip -k -f {{inputs.input_gz}} &&
+    bgzip -f {{inputs.input_gz|stem}}
+  inputs:
+    input_gz:
+      type: file
+      format: gz
+      required: true
+      description: gzip-compressed file to convert to bgzf format.
+  outputs:
+    bgzf_file:
+      type: file
+      pattern: "*.gz"
+      description: bgzf-recompressed output file (same name as input).
+  categories: [preprocessing, compression]
+  homepage: https://www.htslib.org/
+  citation: "Danecek et al. 2021, GigaScience, doi:10.1093/gigascience/giab008"
