@@ -3,7 +3,7 @@ execution:
   name: bwa-mem2-mem
   version: "2.2.1"
   description: Align paired-end (or single-end) reads to an indexed reference with bwa-mem2 mem.
-  container: quay.io/biocontainers/bwa-mem2:2.2.1
+  container: quay.io/biocontainers/bwa-mem2:2.2.1--hd03093a_2
   command: >-
     bwa-mem2 mem -t {{parameters.threads}} -R "{{parameters.read_group}}"
     {{inputs.ref_fasta}} {{inputs.reads1}} {{inputs.reads2}}

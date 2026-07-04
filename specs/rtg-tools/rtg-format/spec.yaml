@@ -3,7 +3,7 @@ execution:
   name: rtg-format
   version: "3.12.1"
   description: Convert a reference FASTA into an RTG SDF, required as the template for rtg-vcfeval.
-  container: quay.io/biocontainers/rtg-tools:3.12.1
+  container: quay.io/biocontainers/rtg-tools:3.12.1--hdfd78af_0
   command: >-
     rtg format -o {{outputs._dir}}/ref.sdf {{inputs.ref_fasta}}
   inputs:

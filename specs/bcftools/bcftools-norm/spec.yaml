@@ -3,7 +3,7 @@ execution:
   name: bcftools-norm
   version: "1.20"
   description: Left-align and normalize indels and split/join multiallelic sites against a reference.
-  container: quay.io/biocontainers/bcftools:1.20
+  container: quay.io/biocontainers/bcftools:1.20--h8b25389_0
   command: >-
     bcftools norm -f {{inputs.ref_fasta}} -m {{parameters.multiallelics}}
     -O z -o {{outputs._dir}}/normalized.vcf.gz {{inputs.input_vcf}}

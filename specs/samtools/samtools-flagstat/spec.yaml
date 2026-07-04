@@ -3,7 +3,7 @@ execution:
   name: samtools-flagstat
   version: "1.20"
   description: Report alignment summary statistics (counts of mapped, paired, duplicate reads).
-  container: quay.io/biocontainers/samtools:1.20
+  container: quay.io/biocontainers/samtools:1.20--h50ea8bc_1
   command: >-
     samtools flagstat {{inputs.input_bam}} > {{outputs._dir}}/flagstat.txt
   inputs:

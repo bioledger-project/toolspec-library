@@ -3,7 +3,7 @@ execution:
   name: rtg-vcfeval
   version: "3.12.1"
   description: Compare called variants against a baseline (truth) VCF and report TP/FP/FN concordance.
-  container: quay.io/biocontainers/rtg-tools:3.12.1
+  container: quay.io/biocontainers/rtg-tools:3.12.1--hdfd78af_0
   command: >-
     rtg vcfeval -b {{inputs.baseline}} -c {{inputs.calls}}
     -t {{inputs.template}} -o {{outputs._dir}}/vcfeval {{parameters.extra_flags}}

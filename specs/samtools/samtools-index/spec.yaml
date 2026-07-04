@@ -3,7 +3,7 @@ execution:
   name: samtools-index
   version: "1.20"
   description: Index a coordinate-sorted BAM, producing a .bai index.
-  container: quay.io/biocontainers/samtools:1.20
+  container: quay.io/biocontainers/samtools:1.20--h50ea8bc_1
   command: >-
     samtools index {{inputs.input_bam}}
   inputs:

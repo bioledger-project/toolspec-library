@@ -3,7 +3,7 @@ execution:
   name: samtools-sort
   version: "1.20"
   description: Sort a SAM/BAM file by coordinate and emit a sorted BAM.
-  container: quay.io/biocontainers/samtools:1.20
+  container: quay.io/biocontainers/samtools:1.20--h50ea8bc_1
   command: >-
     samtools sort -@ {{parameters.threads}} -m {{parameters.memory}}
     -o {{outputs._dir}}/sorted.bam {{inputs.input_sam}}

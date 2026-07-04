@@ -3,7 +3,7 @@ execution:
   name: samtools-faidx
   version: "1.20"
   description: Build a FASTA index (.fai) for a reference genome.
-  container: quay.io/biocontainers/samtools:1.20
+  container: quay.io/biocontainers/samtools:1.20--h50ea8bc_1
   command: >-
     samtools faidx {{inputs.ref_fasta}}
   inputs:
