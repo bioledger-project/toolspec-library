@@ -121,8 +121,7 @@ class BehavioralTestCase(pytest.Item):
         self.case = case
 
     def runtest(self):
-        from bioledger_toolspec_schema import load_spec
-        from jinja2 import Template
+        from bioledger_toolspec_schema import get_jinja_env, load_spec
 
         if not self.spec_path.exists():
             pytest.skip("spec.yaml not found")
@@ -142,8 +141,8 @@ class BehavioralTestCase(pytest.Item):
             "outputs": {"_dir": "/output"},
         }
 
-        template = Template(spec.execution.command)
-        rendered = template.render(context)
+        env = get_jinja_env()
+        rendered = env.from_string(spec.execution.command).render(context)
 
         for substr in expects.get("command_contains", []):
             if substr not in rendered:
